@@ -1,0 +1,304 @@
+/* src/styles/AnalyticsOverlay.module.css
+   Bounty Task 2 — Paused-State Analytics Overlay
+   Reuses the app's existing dark-theme color palette and spacing conventions. */
+
+/* ── Backdrop ────────────────────────────────────────────────────────────────── */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 900;
+  animation: backdropIn 0.2s ease;
+}
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Panel — full-screen overlay with internal scroll ───────────────────────── */
+.panel {
+  position: fixed;
+  inset: 0;
+  margin: 24px;
+  background: #0f1319;
+  border: 1px solid #21262d;
+  border-top: 2px solid #1d4ed8;
+  border-radius: 12px;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(88, 166, 255, 0.08);
+  z-index: 950;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: panelIn 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes panelIn {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: linear-gradient(90deg, #111827 0%, #0f1319 100%);
+  border-bottom: 1px solid #21262d;
+  flex-shrink: 0;
+}
+
+.headerIcon {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.headerTitle {
+  flex: 1;
+  min-width: 0;
+}
+
+.headerHeading {
+  font-size: 14px;
+  font-weight: 700;
+  color: #e6edf3;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.headerSubtitle {
+  font-size: 11px;
+  color: #58a6ff;
+  margin-top: 2px;
+}
+
+.pausedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #f87171;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.pausedDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f87171;
+  animation: pulseDot 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+/* Close button — matches RowInspector pattern */
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #8b949e;
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  font-family: inherit;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e6edf3;
+  border-color: #484f58;
+}
+
+/* ── Meta bar (row count) ─────────────────────────────────────────────────────── */
+.metaBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: #0d1117;
+  border-bottom: 1px solid #161b22;
+  font-size: 12px;
+  color: #6e7681;
+  flex-shrink: 0;
+}
+
+.metaCount {
+  font-weight: 700;
+  color: #c9d1d9;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Scrollable body ─────────────────────────────────────────────────────────── */
+.body {
+  flex: 1 1 0;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.body::-webkit-scrollbar { width: 8px; }
+.body::-webkit-scrollbar-track { background: transparent; }
+.body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+.body::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+/* ── Charts grid ─────────────────────────────────────────────────────────────── */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  grid-template-rows: auto auto;
+  gap: 20px;
+}
+
+/* Doughnut card sits in right column, spanning both rows */
+.doughnutCard {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+
+/* ── Chart card ──────────────────────────────────────────────────────────────── */
+.card {
+  background: #161b22;
+  border: 1px solid #21262d;
+  border-radius: 10px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 260px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.cardIcon {
+  font-size: 16px;
+  line-height: 1;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.cardMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #e6edf3;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cardDesc {
+  font-size: 11px;
+  color: #6e7681;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+/* ── Chart canvas container ──────────────────────────────────────────────────── */
+.chartWrap {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+/* For the doughnut — fixed aspect, centered */
+.doughnutWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────────── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 180px;
+  color: #484f58;
+  font-size: 13px;
+}
+
+.emptyIcon {
+  font-size: 32px;
+  opacity: 0.4;
+}
+
+/* ── Analytics toggle button (header control) ────────────────────────────────── */
+.analyticsBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.1s, opacity 0.15s;
+  letter-spacing: 0.02em;
+  background: #0e1e35;
+  border-color: #1d4ed8;
+  color: #79c0ff;
+  white-space: nowrap;
+}
+
+.analyticsBtn:active {
+  transform: scale(0.97);
+}
+
+.analyticsBtn:hover:not(:disabled) {
+  background: #162032;
+  border-color: #388bfd;
+  box-shadow: 0 0 0 1px #1d4ed8;
+}
+
+.analyticsBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.analyticsBtnOpen {
+  background: #162032;
+  border-color: #388bfd;
+  color: #58a6ff;
+  box-shadow: 0 0 0 1px #1d4ed8;
+}
+
+.analyticsBtnIcon {
+  font-size: 13px;
+  line-height: 1;
+}

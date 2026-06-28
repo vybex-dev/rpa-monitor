@@ -22,7 +22,7 @@ function KpiBar({ kpis }) {
   const { totalRowsProcessed, totalRobotsDeployed, totalAnnualSavings, history } = kpis;
 
   return (
-    <div className={styles.bar} role="region" aria-label="Live KPI counters">
+    <div className={styles.bar} role="region" aria-label="Live KPI counters" aria-live="polite">
       <KpiCard
         label="Rows Processed"
         value={totalRowsProcessed.toLocaleString('en-US')}
@@ -73,15 +73,17 @@ function KpiCard({ label, value, accent, history }) {
     });
 
     ctx.strokeStyle = color;
-    ctx.lineWidth = 1.5;
-    ctx.globalAlpha = 0.6;
+    ctx.lineWidth = 2.5;
+    ctx.globalAlpha = 0.8;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8;
     ctx.stroke();
 
     // Fill gradient
     const gradient = ctx.createLinearGradient(0, 0, 0, height);
-    gradient.addColorStop(0, `${color}30`); // subtle top
+    gradient.addColorStop(0, `${color}50`); // vibrant top
     gradient.addColorStop(1, `${color}00`); // transparent bottom
     
     ctx.lineTo(width, height);

@@ -56,6 +56,13 @@ body,
   text-align: left;
   line-height: 1.5;
   width: 350px;
+  text-shadow: 0 0 8px rgba(63, 185, 80, 0.8), 0 0 16px rgba(63, 185, 80, 0.4);
+  animation: crtFlicker 0.15s infinite;
+}
+@keyframes crtFlicker {
+  0% { opacity: 0.95; }
+  50% { opacity: 1; }
+  100% { opacity: 0.9; }
 }
 .bootCursor {
   animation: blink 1s step-end infinite;
@@ -352,4 +359,49 @@ body,
   min-width: 20px;
   line-height: 1.4;
   margin-left: 2px;
+}
+
+/* ── Bounty Task 2: Analytics View button ────────────────────────────────────── */
+.analyticsBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 1px solid #1d4ed8;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    box-shadow 0.15s,
+    transform 0.1s,
+    opacity 0.15s;
+  letter-spacing: 0.02em;
+  background: #0e1e35;
+  color: #79c0ff;
+  white-space: nowrap;
+}
+
+.analyticsBtn:active {
+  transform: scale(0.97);
+}
+
+.analyticsBtn:hover:not(:disabled) {
+  background: #162032;
+  border-color: #388bfd;
+  box-shadow: 0 0 0 1px #1d4ed8;
+}
+
+.analyticsBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.analyticsBtnOpen {
+  background: #162032;
+  border-color: #388bfd;
+  color: #58a6ff;
+  box-shadow: 0 0 0 1px #1d4ed8;
 }

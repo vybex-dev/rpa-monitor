@@ -12,6 +12,7 @@ import RowInspector from "./components/RowInspector";
 import { CommandPalette } from "./components/CommandPalette";
 import { ContextMenu } from "./components/ContextMenu";
 import { exportToCsv } from "./utils/exportToCsv";
+import AnalyticsOverlay from "./components/AnalyticsOverlay";
 import "./App.css";
 
 const FILTER_FIELDS = ["automation_type", "department", "industry"];
@@ -84,6 +85,9 @@ export default function App() {
     "rpa-layout-v1",
     LAYOUT_DEFAULTS,
   );
+
+  // ── Analytics Overlay (Bounty Task 2) ──────────────────────────────────────
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
 
   // ── Command Palette ───────────────────────────────────────────────────────
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -269,6 +273,20 @@ export default function App() {
               </>
             )}
           </button>
+
+          {/* Bounty Task 2: Analytics View toggle — only active while paused */}
+          <button
+            id="analytics-view-btn"
+            className={`analyticsBtn ${analyticsOpen ? "analyticsBtnOpen" : ""}`}
+            onClick={() => setAnalyticsOpen((v) => !v)}
+            disabled={!isPaused}
+            title={isPaused ? (analyticsOpen ? "Close Analytics View" : "Open Analytics View") : "Pause the stream to use Analytics View"}
+            aria-label={analyticsOpen ? "Close Analytics View" : "Open Analytics View"}
+            aria-pressed={analyticsOpen}
+          >
+            <span className="pauseBtnIcon">📈</span>
+            <span className="pauseBtnText">Analytics</span>
+          </button>
         </div>
       </header>
 
@@ -326,6 +344,13 @@ export default function App() {
 
       {/* ── Row Inspector (Bounty Task 1) ─────────────────────────────────── */}
       <RowInspector row={inspectedRow} onClose={() => setInspectedRow(null)} />
+
+      {/* ── Analytics Overlay (Bounty Task 2) ────────────────────────────────── */}
+      <AnalyticsOverlay
+        isOpen={analyticsOpen && isPaused}
+        onClose={() => setAnalyticsOpen(false)}
+        activeViewPool={activeViewPool}
+      />
     </div>
   );
 }
