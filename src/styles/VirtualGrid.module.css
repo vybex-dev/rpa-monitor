@@ -1,0 +1,326 @@
+/* src/styles/VirtualGrid.module.css
+   Phase 5: adds .statusPaused + .pausedDot, fixes .emptyState to flex flow */
+
+/* ── Shell ──────────────────────────────────────────────────────────────────── */
+.gridShell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #0d0f14;
+  font-size: 12px;
+  color: #c9d1d9;
+}
+
+/* ── Status bar ─────────────────────────────────────────────────────────────── */
+.statusBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 12px;
+  background: #161b22;
+  border-bottom: 1px solid #21262d;
+  flex-shrink: 0;
+  height: 28px;
+}
+
+.statusCount {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: #8b949e;
+}
+
+.statusOf {
+  color: #6e7681;
+}
+
+.statusLabel {
+  color: #6e7681;
+}
+
+/* Live indicator */
+.statusLive {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #3fb950;
+  text-transform: uppercase;
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3fb950;
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+/* Paused indicator — replaces LIVE when stream is frozen */
+.statusPaused {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #f87171;
+  text-transform: uppercase;
+}
+
+.pausedDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f87171;
+  /* Slow steady blink — distinct from live pulse */
+  animation: pausedBlink 1.2s step-end infinite;
+}
+
+@keyframes pausedBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── Column headers ─────────────────────────────────────────────────────────── */
+.headerWrap {
+  flex-shrink: 0;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  overflow: hidden;
+}
+
+.headerRow {
+  display: flex;
+  height: 32px;
+  align-items: center;
+}
+
+.headerCell {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #8b949e;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  user-select: none;
+  border-right: 1px solid #21262d;
+  height: 100%;
+}
+
+.headerCell:last-child {
+  border-right: none;
+}
+
+.headerRight {
+  justify-content: flex-end;
+}
+
+.sortable {
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.sortable:hover {
+  background: #1c2128;
+  color: #c9d1d9;
+}
+
+.sorted {
+  background: #1c2740;
+  color: #58a6ff;
+}
+
+.headerLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sortIndicator {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: inherit;
+}
+
+/* ── Feature 9: Sort priority badge ─────────────────────────────────────────── */
+.sortPriority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1d4ed8;
+  color: #bfdbfe;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 8px;
+  width: 14px;
+  height: 14px;
+  margin-left: 2px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* ── Feature 5: gridBody + frozen overlay ───────────────────────────────────── */
+.gridBody {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.frozenOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 15, 20, 0.72);
+  backdrop-filter: blur(1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+  animation: overlayFadeIn 0.15s ease;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.frozenBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 32px;
+  background: #161b22;
+  border: 1px solid #f87171;
+  border-radius: 10px;
+  box-shadow: 0 0 24px rgba(248, 113, 113, 0.18), 0 4px 16px rgba(0,0,0,0.5);
+}
+
+.frozenIcon {
+  font-size: 26px;
+  line-height: 1;
+  color: #f87171;
+}
+
+.frozenLabel {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #f87171;
+  text-transform: uppercase;
+}
+
+.frozenQueue {
+  font-size: 11px;
+  color: #fca5a5;
+  letter-spacing: 0.04em;
+  background: rgba(248, 113, 113, 0.1);
+  padding: 2px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(248, 113, 113, 0.25);
+}
+
+/* ── Scrollable grid body ───────────────────────────────────────────────────── */
+.outerScroll {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* ── Row cells (painted imperatively — :global matches imperative class names) ── */
+:global(.vRow) {
+  border-bottom: 1px solid #1c2128;
+}
+
+:global(.vRow.rowEven) {
+  background: #0d0f14;
+}
+
+:global(.vRow.rowOdd) {
+  background: #111318;
+}
+
+:global(.vRow.rowAlert) {
+  background: #1a0e0e;
+}
+
+:global(.vRow.flash) {
+  animation: alertFlash 0.6s ease-out;
+}
+
+@keyframes alertFlash {
+  0%   { background: #5c1a1a; }
+  100% { background: #1a0e0e; }
+}
+
+:global(.vCell) {
+  color: #c9d1d9;
+  border-right: 1px solid #1c2128;
+}
+
+:global(.vCell:last-child) {
+  border-right: none;
+}
+
+:global(.vCell--right) {
+  font-variant-numeric: tabular-nums;
+}
+
+:global(.vCell.cellNegative) {
+  color: #f85149;
+}
+
+:global(.vCell[data-status="Active"])    { color: #3fb950; }
+:global(.vCell[data-status="Completed"]) { color: #58a6ff; }
+:global(.vCell[data-status="Failed"])    { color: #f85149; }
+:global(.vCell[data-status="On Hold"])   { color: #d29922; }
+
+/* ── Empty state — flex sibling of outerScroll, not absolute ────────────────── */
+/* Phase 5 fix: was position:absolute which fought the frozen overlay z-index.  */
+/* Now it's a flex child that only renders when filteredCount === 0 && !paused. */
+.emptyState {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  color: #8b949e;
+  text-align: center;
+  gap: 8px;
+  border-top: 1px solid #21262d;
+}
+
+.emptyIcon {
+  font-size: 40px;
+  opacity: 0.35;
+  line-height: 1;
+}
+
+.emptyTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6e7681;
+  margin-top: 4px;
+}
+
+.emptyHint {
+  font-size: 12px;
+  color: #4b5563;
+}

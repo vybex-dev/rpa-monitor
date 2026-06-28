@@ -1,0 +1,137 @@
+/* src/styles/AlertRowList.module.css */
+
+/* ── Flash animation (Feature 3) ──────────────────────────────────────────
+   Compositor-friendly: background-color only, no geometry changes.
+   Auto-expires at 600ms — no JS cleanup timer needed.
+   The animationend event in AlertRow.jsx removes the class.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes alertFlash {
+  0%   { background-color: rgba(239, 68, 68, 0.35); }
+  40%  { background-color: rgba(239, 68, 68, 0.20); }
+  100% { background-color: transparent; }
+}
+
+.flash {
+  animation: alertFlash 600ms ease-out forwards;
+}
+
+/* ── Section wrapper ───────────────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 0 0 16px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 20px 8px;
+  border-bottom: 1px solid #2a3044;
+}
+
+.title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #475569;
+}
+
+/* ── Table ─────────────────────────────────────────────────────────────── */
+.tableWrap {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  background: #0a0d18;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #475569;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #1e2535;
+  white-space: nowrap;
+}
+
+/* Column widths */
+.table colgroup,
+.table th:nth-child(1) { width: 30%; }
+.table th:nth-child(2) { width: 12%; }
+.table th:nth-child(3) { width: 10%; }
+.table th:nth-child(4) { width: 16%; }
+.table th:nth-child(5) { width: 16%; }
+.table th:nth-child(6) { width: 10%; }
+
+.row {
+  border-bottom: 1px solid #131826;
+  transition: background-color 80ms ease;
+}
+
+.row:hover {
+  background-color: #151b2d;
+}
+
+.table td {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #94a3b8;
+  padding: 6px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Numeric cells ─────────────────────────────────────────────────────── */
+.numeric {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: #64748b;
+}
+
+.negative {
+  color: #f87171 !important;
+}
+
+/* ── Project name cell ─────────────────────────────────────────────────── */
+.projectName {
+  color: #cbd5e1 !important;
+  font-weight: 500;
+}
+
+/* ── Status badges ─────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.statusActive    { background: rgba(34, 197, 94, 0.15);  color: #4ade80; }
+.statusCompleted { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+.statusFailed    { background: rgba(239, 68, 68, 0.15);  color: #f87171; }
+.statusHold      { background: rgba(234, 179, 8, 0.15);  color: #fbbf24; }

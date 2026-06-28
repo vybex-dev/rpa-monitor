@@ -1,0 +1,262 @@
+/* src/styles/Toolbar.module.css */
+
+/* ── Toolbar shell ─────────────────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  height: 44px;
+  background: #0d1117;
+  border-bottom: 1px solid #21262d;
+  flex-shrink: 0;
+  overflow: visible;   /* allow dropdown panels to overflow */
+  position: relative;
+  z-index: 20;         /* above grid so panels render on top */
+}
+
+/* ── Search box ──────────────────────────────────────────────────────────────  */
+.searchWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 0 0 260px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 9px;
+  font-size: 15px;
+  color: #6e7681;
+  pointer-events: none;
+  line-height: 1;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.searchInput {
+  width: 100%;
+  height: 30px;
+  padding: 0 10px 0 28px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.searchInput::placeholder {
+  color: #484f58;
+}
+
+.searchInput:focus {
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.15);
+}
+
+/* ── Filter group ─────────────────────────────────────────────────────────── */
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Dropdown wrapper ─────────────────────────────────────────────────────── */
+.dropdownWrap {
+  position: relative;
+}
+
+.dropdownBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 10px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #8b949e;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.dropdownBtn:hover {
+  background: #1c2128;
+  border-color: #484f58;
+  color: #c9d1d9;
+}
+
+.dropdownBtnActive {
+  background: #162032;
+  border-color: #388bfd;
+  color: #58a6ff;
+}
+
+.dropdownBtnActive:hover {
+  background: #1c2c45;
+  border-color: #58a6ff;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1d4ed8;
+  color: #bfdbfe;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 0 5px;
+  min-width: 18px;
+  height: 16px;
+  line-height: 1;
+}
+
+.chevron {
+  font-size: 9px;
+  color: #6e7681;
+  margin-left: 1px;
+}
+
+/* ── Dropdown panel ────────────────────────────────────────────────────────── */
+.panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 180px;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  z-index: 100;
+  /* Subtle entrance */
+  animation: panelOpen 0.12s ease;
+}
+
+@keyframes panelOpen {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 6px;
+  border-bottom: 1px solid #21262d;
+}
+
+.panelLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #6e7681;
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: #58a6ff;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: inherit;
+  transition: color 0.1s;
+}
+
+.clearBtn:hover {
+  color: #79c0ff;
+}
+
+.optionList {
+  list-style: none;
+  padding: 4px 0;
+}
+
+.optionList li + li {
+  border-top: 1px solid #1c2128;
+}
+
+.optionLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.optionLabel:hover {
+  background: #1c2128;
+}
+
+.checkbox {
+  accent-color: #58a6ff;
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.optionText {
+  font-size: 12px;
+  color: #c9d1d9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Clear all button ─────────────────────────────────────────────────────── */
+.clearAllBtn {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 5px;
+  color: #8b949e;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.clearAllBtn:hover {
+  border-color: #f85149;
+  color: #f85149;
+}
+
+/* ── Row count badge ─────────────────────────────────────────────────────── */
+.countBadge {
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.countNum {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #c9d1d9;
+}
+
+.countOf {
+  font-size: 11px;
+  color: #6e7681;
+  font-variant-numeric: tabular-nums;
+}

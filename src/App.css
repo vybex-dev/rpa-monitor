@@ -1,0 +1,223 @@
+/* App.css — Phase 5: visual polish pass */
+
+/* ── Reset & root ──────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+  background: #0d0f14;
+  color: #c9d1d9;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── App shell ─────────────────────────────────────────────────────────────── */
+.appShell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── App header ────────────────────────────────────────────────────────────── */
+.appHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 44px;
+  /* Signature moment: subtle gradient + top border accent */
+  background: linear-gradient(90deg, #0d1117 0%, #111827 100%);
+  border-bottom: 1px solid #21262d;
+  border-top: 2px solid #1d4ed8;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+/* ── Brand ─────────────────────────────────────────────────────────────────── */
+.appBrand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #e6edf3;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.appBrandMark {
+  /* Hexagon icon — gradient from blue to cyan */
+  background: linear-gradient(135deg, #3b82f6, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.appBrandSub {
+  font-size: 10px;
+  font-weight: 400;
+  color: #484f58;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding-left: 8px;
+  border-left: 1px solid #21262d;
+}
+
+/* ── Grid region ────────────────────────────────────────────────────────────── */
+.gridRegion {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Control cluster (right side of header) ─────────────────────────────────── */
+.appControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Feature 6: Layout toggle buttons ───────────────────────────────────────── */
+.layoutToggles {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 6px;
+}
+
+.layoutTogglesLabel {
+  font-size: 10px;
+  color: #484f58;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-right: 5px;
+  user-select: none;
+  padding-right: 8px;
+  border-right: 1px solid #21262d;
+}
+
+.layoutBtn {
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.layoutBtnActive {
+  background: #162032;
+  border-color: #264f80;
+  color: #79c0ff;
+}
+
+.layoutBtnActive:hover {
+  background: #1c2d47;
+  border-color: #388bfd;
+}
+
+.layoutBtnHidden {
+  background: transparent;
+  border-color: transparent;
+  color: #484f58;
+}
+
+.layoutBtnHidden:hover {
+  background: #161b22;
+  color: #6e7681;
+  border-color: #21262d;
+}
+
+/* ── Feature 5: Pause / Play button ─────────────────────────────────────────── */
+.pauseBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+
+.pauseBtn:active {
+  transform: scale(0.97);
+}
+
+.pauseBtnLive {
+  background: #0f2418;
+  border-color: #196127;
+  color: #3fb950;
+}
+
+.pauseBtnLive:hover {
+  background: #132d1f;
+  border-color: #238636;
+  box-shadow: 0 0 0 1px #196127;
+}
+
+.pauseBtnPaused {
+  background: #250f0f;
+  border-color: #6e2c2c;
+  color: #f87171;
+  animation: pausePulse 2s ease-in-out infinite;
+}
+
+.pauseBtnPaused:hover {
+  background: #2d1414;
+  box-shadow: 0 0 0 1px #6e2c2c;
+}
+
+@keyframes pausePulse {
+  0%, 100% { border-color: #6e2c2c; }
+  50%       { border-color: #b44040; }
+}
+
+.pauseBtnIcon {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.pauseBtnText {
+  line-height: 1;
+}
+
+.pauseQueueBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f87171;
+  color: #1a0000;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 1px 6px;
+  min-width: 20px;
+  line-height: 1.4;
+  margin-left: 2px;
+}
