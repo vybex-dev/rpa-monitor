@@ -1,26 +1,63 @@
-// src/App.jsx — Phase 4: Pause/Play (F5) + Layout Persistence (F6) + Multi-Sort (F9)
-import { useMemo, useState } from 'react';
-import { useStreamState } from './hooks/useStreamState';
-import { useMultiSortState } from './hooks/useMultiSortState';
-import { useFilterState } from './hooks/useFilterState';
-import { useViewPool } from './hooks/useViewPool';
-import { usePauseQueue } from './hooks/usePauseQueue';
-import { useLayoutVisibility } from './hooks/useLayoutVisibility';
-import KpiBar from './components/KpiBar';
-import { Toolbar } from './components/Toolbar';
-import VirtualGrid from './components/VirtualGrid';
-import './App.css';
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import { useStreamState } from "./hooks/useStreamState";
+import { useMultiSortState } from "./hooks/useMultiSortState";
+import { useFilterState } from "./hooks/useFilterState";
+import { useViewPool } from "./hooks/useViewPool";
+import { usePauseQueue } from "./hooks/usePauseQueue";
+import { useLayoutVisibility } from "./hooks/useLayoutVisibility";
+import KpiBar from "./components/KpiBar";
+import { Toolbar } from "./components/Toolbar";
+import VirtualGrid from "./components/VirtualGrid";
+import RowInspector from "./components/RowInspector";
+import { CommandPalette } from "./components/CommandPalette";
+import { ContextMenu } from "./components/ContextMenu";
+import { exportToCsv } from "./utils/exportToCsv";
+import "./App.css";
 
-const FILTER_FIELDS = ['automation_type', 'department', 'industry'];
+const FILTER_FIELDS = ["automation_type", "department", "industry"];
 
 // Default panel visibility — all visible on first load
 const LAYOUT_DEFAULTS = {
-  kpiBar:  true,
+  kpiBar: true,
   toolbar: true,
-  grid:    true,
+  grid: true,
 };
 
+function TerminalBoot({ onComplete }) {
+  const [text, setText] = useState("");
+  const fullText =
+    "INITIALIZING TELEMETRY...\nDECRYPTING MAINFRAME...\nESTABLISHING SECURE CONNECTION...\nCONNECTED.";
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  useEffect(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+      setText(fullText.slice(0, i));
+      i++;
+      if (i > fullText.length) {
+        clearInterval(interval);
+        setTimeout(() => onCompleteRef.current(), 500); // brief pause before fade
+      }
+    }, 15);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="bootSequence">
+      <div className="bootText">
+        {text}
+        <span className="bootCursor">█</span>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
+  const [isBooting, setIsBooting] = useState(true);
+
   // ── Stream state ──────────────────────────────────────────────────────────
   const { kpis, rowMap } = useStreamState();
 
@@ -37,16 +74,53 @@ export default function App() {
   } = useFilterState();
 
   // ── Feature 10: Search ────────────────────────────────────────────────────
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   // ── Feature 5: Pause / Play ───────────────────────────────────────────────
   const { isPaused, queueLength, togglePause } = usePauseQueue();
 
   // ── Feature 6: Layout persistence ────────────────────────────────────────
   const { visibility, togglePanel, isPanelVisible } = useLayoutVisibility(
-    'rpa-layout-v1',
+    "rpa-layout-v1",
     LAYOUT_DEFAULTS,
   );
+
+  // ── Command Palette ───────────────────────────────────────────────────────
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  // ── Context Menu ─────────────────────────────────────────────────────────
+  const [contextMenu, setContextMenu] = useState(null); // { x, y, rowData }
+  const handleContextMenu = useCallback((x, y, rowData) => {
+    setContextMenu({ x, y, rowData });
+  }, []);
+
+  // ── Row Inspector (Bounty Task 1) ─────────────────────────────────────────
+  const [inspectedRow, setInspectedRow] = useState(null);
+  // isPaused is available from usePauseQueue — read via ref in the handler
+  // so the callback identity stays stable (no deps on isPaused boolean)
+  const isPausedRef = useRef(isPaused);
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
+
+  const handleRowClick = useCallback((rowData) => {
+    // Guard: inspector only opens while paused (belt-and-suspenders;
+    // the hook already guards, but this keeps App state clean too)
+    if (!isPausedRef.current) return;
+    setInspectedRow(rowData);
+  }, []);
+
+  // ── Global Cmd+K listener ─────────────────────────────────────────────────
+  useEffect(() => {
+    function onKeyDown(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setPaletteOpen((prev) => !prev);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   // ── Filter options (unique values per categorical field) ──────────────────
   const filterOptions = useMemo(() => {
@@ -56,12 +130,14 @@ export default function App() {
       industry: new Set(),
     };
     for (const row of rowMap.values()) {
-      FILTER_FIELDS.forEach(f => { if (row[f]) opts[f].add(row[f]); });
+      FILTER_FIELDS.forEach((f) => {
+        if (row[f]) opts[f].add(row[f]);
+      });
     }
     return {
       automation_type: [...opts.automation_type].sort(),
-      department:      [...opts.department].sort(),
-      industry:        [...opts.industry].sort(),
+      department: [...opts.department].sort(),
+      industry: [...opts.industry].sort(),
     };
   }, [rowMap]);
 
@@ -70,18 +146,82 @@ export default function App() {
     rowMap,
     filters,
     searchQuery,
-    sortConfig: sortStack,   // sortRows.js now accepts array or single object
+    sortConfig: sortStack, // sortRows.js now accepts array or single object
   });
 
+  // ── Command palette commands ──────────────────────────────────────────────
+  const commands = useMemo(
+    () => [
+      {
+        id: "toggle-stream",
+        name: isPaused ? "Resume Stream" : "Pause Stream",
+        icon: isPaused ? "▶" : "⏸",
+        action: togglePause,
+      },
+      {
+        id: "clear-filters",
+        name: "Clear All Filters",
+        icon: "✕",
+        action: clearAllFilters,
+      },
+      {
+        id: "export-csv",
+        name: "Export CSV",
+        icon: "↓",
+        action: () => exportToCsv(activeViewPool),
+      },
+      {
+        id: "toggle-kpi",
+        name: `${isPanelVisible("kpiBar") ? "Hide" : "Show"} KPI Bar`,
+        icon: "📊",
+        action: () => togglePanel("kpiBar"),
+      },
+      {
+        id: "toggle-toolbar",
+        name: `${isPanelVisible("toolbar") ? "Hide" : "Show"} Toolbar`,
+        icon: "🔧",
+        action: () => togglePanel("toolbar"),
+      },
+      {
+        id: "toggle-grid",
+        name: `${isPanelVisible("grid") ? "Hide" : "Show"} Grid`,
+        icon: "⊞",
+        action: () => togglePanel("grid"),
+      },
+    ],
+    [
+      isPaused,
+      togglePause,
+      clearAllFilters,
+      activeViewPool,
+      isPanelVisible,
+      togglePanel,
+    ],
+  );
+
+  if (isBooting) {
+    return <TerminalBoot onComplete={() => setIsBooting(false)} />;
+  }
+
   return (
-    <div className="appShell">
+    <div className="appShell fade-in">
       {/* ── App header ─────────────────────────────────────────────────── */}
-      <header className="appHeader">
+      <header className="appHeader glassmorphism">
         <div className="appBrand">
-          <span className="appBrandMark">⬡</span>
+          <div className="appBrandMark">
+            <span className="screen"></span>
+          </div>
           RPA Monitor
           <span className="appBrandSub">Enterprise Control Terminal</span>
         </div>
+        <button
+          className="cmdKHint"
+          onClick={() => setPaletteOpen(true)}
+          title="Open Command Palette"
+          aria-label="Open Command Palette"
+        >
+          <span>⌘K</span>
+        </button>
 
         {/* ── Control cluster: Layout toggles + Pause/Play ─────────────── */}
         <div className="appControls">
@@ -89,15 +229,15 @@ export default function App() {
           <div className="layoutToggles" title="Show / hide panels">
             <span className="layoutTogglesLabel">Panels</span>
             {[
-              { id: 'kpiBar',  label: 'KPIs'    },
-              { id: 'toolbar', label: 'Toolbar'  },
-              { id: 'grid',    label: 'Grid'     },
+              { id: "kpiBar", label: "KPIs" },
+              { id: "toolbar", label: "Toolbar" },
+              { id: "grid", label: "Grid" },
             ].map(({ id, label }) => (
               <button
                 key={id}
-                className={`layoutBtn ${isPanelVisible(id) ? 'layoutBtnActive' : 'layoutBtnHidden'}`}
+                className={`layoutBtn ${isPanelVisible(id) ? "layoutBtnActive" : "layoutBtnHidden"}`}
                 onClick={() => togglePanel(id)}
-                title={`${isPanelVisible(id) ? 'Hide' : 'Show'} ${label}`}
+                title={`${isPanelVisible(id) ? "Hide" : "Show"} ${label}`}
                 aria-pressed={isPanelVisible(id)}
               >
                 {label}
@@ -107,17 +247,19 @@ export default function App() {
 
           {/* Feature 5: Pause/Play */}
           <button
-            className={`pauseBtn ${isPaused ? 'pauseBtnPaused' : 'pauseBtnLive'}`}
+            className={`pauseBtn ${isPaused ? "pauseBtnPaused" : "pauseBtnLive"}`}
             onClick={togglePause}
-            title={isPaused ? 'Resume stream' : 'Pause stream'}
-            aria-label={isPaused ? 'Resume stream' : 'Pause stream'}
+            title={isPaused ? "Resume stream" : "Pause stream"}
+            aria-label={isPaused ? "Resume stream" : "Pause stream"}
           >
             {isPaused ? (
               <>
                 <span className="pauseBtnIcon">▶</span>
                 <span className="pauseBtnText">Resume</span>
                 {queueLength > 0 && (
-                  <span className="pauseQueueBadge">{queueLength.toLocaleString()}</span>
+                  <span className="pauseQueueBadge">
+                    {queueLength.toLocaleString()}
+                  </span>
                 )}
               </>
             ) : (
@@ -131,10 +273,10 @@ export default function App() {
       </header>
 
       {/* ── Feature 1: KPI Bar ───────────────────────────────────────────── */}
-      {isPanelVisible('kpiBar') && <KpiBar kpis={kpis} />}
+      {isPanelVisible("kpiBar") && <KpiBar kpis={kpis} />}
 
       {/* ── Feature 7 + 10: Toolbar (filters + search) ───────────────────── */}
-      {isPanelVisible('toolbar') && (
+      {isPanelVisible("toolbar") && (
         <Toolbar
           filters={filters}
           filterOptions={filterOptions}
@@ -145,11 +287,12 @@ export default function App() {
           onSearch={setSearchQuery}
           filteredCount={filteredCount}
           totalCount={totalCount}
+          activeViewPool={activeViewPool}
         />
       )}
 
       {/* ── Feature 8 + 5 + 9: Virtualized grid ─────────────────────────── */}
-      {isPanelVisible('grid') && (
+      {isPanelVisible("grid") && (
         <main className="gridRegion">
           <VirtualGrid
             activeViewPool={activeViewPool}
@@ -160,9 +303,29 @@ export default function App() {
             sortStack={sortStack}
             handleSort={handleSort}
             getSortMeta={getSortMeta}
+            onContextMenu={handleContextMenu}
+            onRowClick={handleRowClick}
+            onResume={togglePause}
           />
         </main>
       )}
+
+      {/* ── Command Palette ────────────────────────────────────────────────── */}
+      <CommandPalette
+        isOpen={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        commands={commands}
+      />
+
+      {/* ── Context Menu ──────────────────────────────────────────────────── */}
+      <ContextMenu
+        position={contextMenu ? { x: contextMenu.x, y: contextMenu.y } : null}
+        rowData={contextMenu?.rowData}
+        onClose={() => setContextMenu(null)}
+      />
+
+      {/* ── Row Inspector (Bounty Task 1) ─────────────────────────────────── */}
+      <RowInspector row={inspectedRow} onClose={() => setInspectedRow(null)} />
     </div>
   );
 }

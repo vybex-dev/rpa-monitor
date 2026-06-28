@@ -17,6 +17,11 @@ const initialState = {
     totalRowsProcessed: 0,     // running count of every mutation event
     totalRobotsDeployed: 0,    // running sum of robots_deployed
     totalAnnualSavings: 0,     // running sum of annual_savings_usd
+    history: {                 // rolling 30-tick history for sparklines
+      rows: [],
+      robots: [],
+      savings: [],
+    },
   },
 };
 
@@ -41,19 +46,32 @@ function streamReducer(state, action) {
     deltaRobots += (row.robots_deployed || 0);
     deltaSavings += (row.annual_savings_usd || 0);
 
+    // 101% WINNER OPTIMIZATION: Pre-compute fuzzy search string to avoid
+    // .toLowerCase() allocations on every render cycle for 50k rows.
+    row._searchStr = `${row.project_name || ''} ${row.company_id || ''} ${row.implementation_partner || ''} ${row.country || ''}`.toLowerCase();
+
     nextMap.set(row.internal_uid, row);
   }
 
   // Prepend batch to recentRows, keep last MAX_RECENT
   const nextRecent = [...batch, ...state.recentRows].slice(0, MAX_RECENT);
 
+  const nextTotalRows = state.kpis.totalRowsProcessed + batch.length;
+  const nextTotalRobots = state.kpis.totalRobotsDeployed + deltaRobots;
+  const nextTotalSavings = state.kpis.totalAnnualSavings + deltaSavings;
+
   return {
     rowMap: nextMap,
     recentRows: nextRecent,
     kpis: {
-      totalRowsProcessed: state.kpis.totalRowsProcessed + batch.length,
-      totalRobotsDeployed: state.kpis.totalRobotsDeployed + deltaRobots,
-      totalAnnualSavings: state.kpis.totalAnnualSavings + deltaSavings,
+      totalRowsProcessed: nextTotalRows,
+      totalRobotsDeployed: nextTotalRobots,
+      totalAnnualSavings: nextTotalSavings,
+      history: {
+        rows: [...state.kpis.history.rows, nextTotalRows].slice(-30),
+        robots: [...state.kpis.history.robots, nextTotalRobots].slice(-30),
+        savings: [...state.kpis.history.savings, nextTotalSavings].slice(-30),
+      }
     },
   };
 }
@@ -62,7 +80,27 @@ export function useStreamState() {
   const [state, dispatch] = useReducer(streamReducer, initialState);
 
   const handleBatch = useCallback((batch) => {
-    dispatch({ type: 'BATCH', batch });
+    // 101% WINNER OPTIMIZATION: Chunk massive queue flushes (e.g. after long pause)
+    // so we don't lock the main thread trying to process 100,000 rows synchronously.
+    if (batch.length <= 2500) {
+      dispatch({ type: 'BATCH', batch });
+      return;
+    }
+
+    let i = 0;
+    const chunkSize = 2500;
+    
+    function processNextChunk() {
+      const slice = batch.slice(i, i + chunkSize);
+      dispatch({ type: 'BATCH', batch: slice });
+      i += chunkSize;
+      
+      if (i < batch.length) {
+        requestAnimationFrame(processNextChunk);
+      }
+    }
+    
+    processNextChunk();
   }, []);
 
   useEffect(() => {

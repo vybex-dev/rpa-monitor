@@ -120,6 +120,9 @@ export function useVirtualGrid({
   poolRef,
   getPool,
   setPool,
+  onContextMenu,
+  onRowClick,
+  isPausedRef,
 }) {
   const startIndexRef = useRef(0);
   const rafRef        = useRef(null);
@@ -221,13 +224,35 @@ export function useVirtualGrid({
         rowEl.appendChild(cell);
       }
 
+      // Attach right-click handler (reads live row data via data-uid)
+      if (typeof onContextMenu === 'function') {
+        rowEl.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          const uid = rowEl.dataset.uid;
+          if (!uid) return;
+          const rowData = activeViewPoolRef.current.find(r => r.internal_uid === uid);
+          if (rowData) onContextMenu(e.clientX, e.clientY, rowData);
+        });
+      }
+
+      // Attach left-click handler — fires inspector only when paused
+      if (typeof onRowClick === 'function') {
+        rowEl.addEventListener('click', () => {
+          if (!isPausedRef?.current) return;  // only when paused
+          const uid = rowEl.dataset.uid;
+          if (!uid) return;
+          const rowData = activeViewPoolRef.current.find(r => r.internal_uid === uid);
+          if (rowData) onRowClick(rowData);
+        });
+      }
+
       pool_container.appendChild(rowEl);
       nodes.push(rowEl);
     }
 
     setPool(nodes);
     repaint();
-  }, [outerRef, poolRef, repaint, setPool]);
+  }, [outerRef, poolRef, repaint, setPool, onContextMenu, onRowClick, isPausedRef, activeViewPoolRef]);
 
   // ── wire scroll listener + ResizeObserver ──
   useEffect(() => {

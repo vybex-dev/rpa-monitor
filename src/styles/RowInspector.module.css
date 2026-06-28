@@ -1,0 +1,302 @@
+/* src/styles/RowInspector.module.css
+   Bounty Task 1 — Paused-State Row Inspector Panel */
+
+/* ── Backdrop ────────────────────────────────────────────────────────────────── */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 900;
+  animation: backdropIn 0.2s ease;
+}
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Panel ───────────────────────────────────────────────────────────────────── */
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 420px;
+  max-width: 95vw;
+  background: #0f1319;
+  border-left: 1px solid #21262d;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.6), -2px 0 0 rgba(88, 166, 255, 0.15);
+  z-index: 950;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideIn 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* Alert variant — red left-edge glow */
+.panelAlert {
+  box-shadow:
+    -12px 0 40px rgba(0, 0, 0, 0.6),
+    -2px 0 0 rgba(248, 113, 113, 0.5),
+    inset 3px 0 0 #f87171;
+  border-left-color: #f87171;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────────── */
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: linear-gradient(90deg, #161b22, #0f1319);
+  border-bottom: 1px solid #21262d;
+  flex-shrink: 0;
+}
+
+.panelTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.panelIcon {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.panelHeading {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e6edf3;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.panelSubtitle {
+  font-size: 11px;
+  color: #58a6ff;
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Alert badge in header */
+.alertBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #f87171;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Close button */
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #8b949e;
+  font-size: 13px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  font-family: inherit;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e6edf3;
+  border-color: #484f58;
+}
+
+/* ── Scrollable body ─────────────────────────────────────────────────────────── */
+.panelBody {
+  flex: 1 1 0;
+  overflow-y: auto;
+  padding: 12px 0 8px;
+}
+
+.panelBody::-webkit-scrollbar { width: 6px; }
+.panelBody::-webkit-scrollbar-track { background: transparent; }
+.panelBody::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+.panelBody::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+/* ── Field groups ────────────────────────────────────────────────────────────── */
+.group {
+  margin-bottom: 4px;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px 5px;
+  position: sticky;
+  top: 0;
+  background: #0f1319;
+  z-index: 1;
+}
+
+.groupIcon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.groupLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6e7681;
+}
+
+.groupFields {
+  padding: 0 16px 8px;
+  border-bottom: 1px solid #161b22;
+}
+
+.group:last-child .groupFields {
+  border-bottom: none;
+}
+
+/* ── Individual field row ────────────────────────────────────────────────────── */
+.fieldRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.fieldRow:last-child {
+  border-bottom: none;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  color: #6e7681;
+  font-weight: 500;
+  flex-shrink: 0;
+  min-width: 110px;
+  letter-spacing: 0.02em;
+}
+
+.fieldValue {
+  font-size: 12px;
+  color: #c9d1d9;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  word-break: break-word;
+}
+
+/* Negative ROI — matches grid's cellNegative */
+.valueNegative {
+  color: #f85149;
+  font-weight: 600;
+}
+
+/* ── Status badge ────────────────────────────────────────────────────────────── */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border: 1px solid transparent;
+}
+
+/* Matches grid: vCell[data-status="..."] colours */
+.statusActive {
+  color: #3fb950;
+  background: rgba(63, 185, 80, 0.1);
+  border-color: rgba(63, 185, 80, 0.25);
+}
+
+.statusCompleted {
+  color: #58a6ff;
+  background: rgba(88, 166, 255, 0.1);
+  border-color: rgba(88, 166, 255, 0.25);
+}
+
+.statusFailed {
+  color: #f85149;
+  background: rgba(248, 81, 73, 0.12);
+  border-color: rgba(248, 81, 73, 0.3);
+}
+
+.statusOnHold {
+  color: #d29922;
+  background: rgba(210, 153, 34, 0.1);
+  border-color: rgba(210, 153, 34, 0.25);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────────── */
+.panelFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-top: 1px solid #21262d;
+  background: #0d0f14;
+  flex-shrink: 0;
+}
+
+.footerHint {
+  font-size: 11px;
+  color: #484f58;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  font-size: 10px;
+  color: #6e7681;
+  font-family: inherit;
+}
+
+.closeFooterBtn {
+  padding: 5px 14px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #8b949e;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.closeFooterBtn:hover {
+  background: #1c2128;
+  color: #c9d1d9;
+  border-color: #484f58;
+}

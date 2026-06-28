@@ -83,10 +83,15 @@ const StatusBar = memo(function StatusBar({ totalCount, filteredCount, isPaused 
 });
 
 // ── Frozen overlay — shown when isPaused ──────────────────────────────────────
-const FrozenOverlay = memo(function FrozenOverlay({ queueLength }) {
+const FrozenOverlay = memo(function FrozenOverlay({ queueLength, onResume }) {
   return (
     <div className={styles.frozenOverlay} aria-live="polite" aria-label="Stream paused">
-      <div className={styles.frozenBadge}>
+      <button
+        className={styles.frozenBadge}
+        onClick={onResume}
+        title="Click to resume stream"
+        aria-label="Resume stream"
+      >
         <span className={styles.frozenIcon}>⏸</span>
         <span className={styles.frozenLabel}>PAUSED</span>
         {queueLength > 0 && (
@@ -94,7 +99,10 @@ const FrozenOverlay = memo(function FrozenOverlay({ queueLength }) {
             {queueLength.toLocaleString()} rows queued
           </span>
         )}
-      </div>
+        <span className={styles.frozenInspectHint}>
+          🔍 Click rows to inspect · Click here to resume
+        </span>
+      </button>
     </div>
   );
 });
@@ -120,6 +128,9 @@ export default function VirtualGrid({
   sortStack,
   handleSort,
   getSortMeta,
+  onContextMenu,
+  onRowClick,
+  onResume,
 }) {
   const outerRef   = useRef(null);
   const phantomRef = useRef(null);
@@ -134,6 +145,12 @@ export default function VirtualGrid({
     activeViewPoolRef.current = activeViewPool;
   });
 
+  // Track pause state in a ref so the stream-update effect AND the
+  // imperative click handler (in useVirtualGrid) can read it without
+  // re-subscribing every time isPaused changes.
+  const isPausedRef = useRef(isPaused);
+  useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
+
   const { repaint } = useVirtualGrid({
     activeViewPoolRef,
     outerRef,
@@ -141,12 +158,10 @@ export default function VirtualGrid({
     poolRef,
     getPool,
     setPool,
+    onContextMenu,
+    onRowClick,
+    isPausedRef,
   });
-
-  // Track pause state in a ref so the stream-update effect can read it
-  // without being re-subscribed every time isPaused changes.
-  const isPausedRef = useRef(isPaused);
-  useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
 
   // Repaint on stream update — skip while paused (grid freezes visually)
   useEffect(() => {
@@ -190,7 +205,7 @@ export default function VirtualGrid({
       </div>
 
       {/* Grid body — position relative so overlay can cover it */}
-      <div className={styles.gridBody}>
+      <div className={styles.gridBody} data-paused={isPaused || undefined}>
         <div
           ref={outerRef}
           className={styles.outerScroll}
@@ -208,7 +223,7 @@ export default function VirtualGrid({
         </div>
 
         {/* Frozen overlay — sits over the scroll area only */}
-        {isPaused && <FrozenOverlay queueLength={queueLength} />}
+        {isPaused && <FrozenOverlay queueLength={queueLength} onResume={onResume} />}
 
         {/* Empty state — flex sibling, not absolute, so it doesn't fight the overlay */}
         {showEmpty && <EmptyState />}

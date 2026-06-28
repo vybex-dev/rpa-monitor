@@ -16,9 +16,78 @@ body,
   overflow: hidden;
   background: #0d0f14;
   color: #c9d1d9;
-  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
   font-size: 13px;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border: 2px solid #0d1117;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+/* Boot Sequence */
+.bootSequence {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background: #0d0f14;
+}
+.bootText {
+  color: #3fb950;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: pre-line;
+  text-align: left;
+  line-height: 1.5;
+  width: 350px;
+}
+.bootCursor {
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Glassmorphism utility */
+.glassmorphism {
+  background: rgba(13, 17, 23, 0.75) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
 }
 
 /* ── App shell ─────────────────────────────────────────────────────────────── */
@@ -55,15 +124,43 @@ body,
   letter-spacing: 0.02em;
   flex-shrink: 0;
 }
-
 .appBrandMark {
-  /* Hexagon icon — gradient from blue to cyan */
-  background: linear-gradient(135deg, #3b82f6, #22d3ee);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 20px;
-  line-height: 1;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.appBrandMark .screen {
+  position: relative;
+  width: 18px;
+  height: 13px;
+  background: linear-gradient(135deg, #4f8cff, #22d3ee);
+  border-radius: 2px;
+}
+
+.appBrandMark .screen::before {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 3px;
+  background: #22d3ee;
+  border-radius: 1px;
+}
+
+.appBrandMark .screen::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .appBrandSub {
@@ -74,6 +171,30 @@ body,
   text-transform: uppercase;
   padding-left: 8px;
   border-left: 1px solid #21262d;
+}
+
+/* ── ⌘K Command Palette hint ───────────────────────────────────────────────── */
+.cmdKHint {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #6e7681;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+  white-space: nowrap;
+}
+.cmdKHint:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #c9d1d9;
 }
 
 /* ── Grid region ────────────────────────────────────────────────────────────── */
@@ -123,7 +244,10 @@ body,
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
 }
 
 .layoutBtnActive {
@@ -161,7 +285,10 @@ body,
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+  transition:
+    background 0.15s,
+    box-shadow 0.15s,
+    transform 0.1s;
   letter-spacing: 0.02em;
 }
 
@@ -194,8 +321,13 @@ body,
 }
 
 @keyframes pausePulse {
-  0%, 100% { border-color: #6e2c2c; }
-  50%       { border-color: #b44040; }
+  0%,
+  100% {
+    border-color: #6e2c2c;
+  }
+  50% {
+    border-color: #b44040;
+  }
 }
 
 .pauseBtnIcon {

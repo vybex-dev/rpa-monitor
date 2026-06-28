@@ -59,6 +59,24 @@
   line-height: 1.15;
 }
 
+/* Sparkline canvas styling */
+.sparkline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cardContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .card.cyan   .value { color: #67e8f9; }
 .card.violet .value { color: #c4b5fd; }
 .card.emerald .value{ color: #6ee7b7; }

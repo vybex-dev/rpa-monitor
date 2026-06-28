@@ -260,3 +260,27 @@
   color: #6e7681;
   font-variant-numeric: tabular-nums;
 }
+
+/* ── Export button ────────────────────────────────────────────────────────── */
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  background: #238636;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s, border-color 0.2s;
+  margin-left: 8px;
+}
+
+.exportBtn:hover {
+  background: #2ea043;
+  border-color: rgba(240, 246, 252, 0.2);
+}
