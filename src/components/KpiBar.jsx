@@ -77,8 +77,6 @@ function KpiCard({ label, value, accent, history }) {
     ctx.globalAlpha = 0.8;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 8;
     ctx.stroke();
 
     // Fill gradient
@@ -99,6 +97,7 @@ function KpiCard({ label, value, accent, history }) {
         width={300} 
         height={64} 
         className={styles.sparkline}
+        style={{ filter: `drop-shadow(0 0 8px ${ACCENT_COLORS[accent]})` }}
         aria-hidden="true" 
       />
       <div className={styles.cardContent}>

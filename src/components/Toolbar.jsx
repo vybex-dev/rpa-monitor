@@ -16,7 +16,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from '../styles/Toolbar.module.css';
-import { exportToCsv } from '../utils/exportToCsv';
 
 // ─── Search Box ───────────────────────────────────────────────────────────────
 
@@ -156,10 +155,6 @@ export function Toolbar({
         <span className={styles.countNum}>{filteredCount.toLocaleString()}</span>
         <span className={styles.countOf}>/ {totalCount.toLocaleString()} rows</span>
       </div>
-
-      <button className={styles.exportBtn} onClick={() => exportToCsv(activeViewPool)}>
-        Export CSV
-      </button>
     </div>
   );
 }

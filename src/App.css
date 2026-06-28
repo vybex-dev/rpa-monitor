@@ -405,3 +405,36 @@ body,
   color: #58a6ff;
   box-shadow: 0 0 0 1px #1d4ed8;
 }
+
+/* ── Snapshot Export button ────────────────────────────────────── */
+.exportGlobalBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 1px solid #10b981;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    box-shadow 0.15s,
+    transform 0.1s,
+    opacity 0.15s;
+  letter-spacing: 0.02em;
+  background: #064e3b;
+  color: #a7f3d0;
+  white-space: nowrap;
+}
+
+.exportGlobalBtn:active {
+  transform: scale(0.97);
+}
+
+.exportGlobalBtn:hover {
+  background: #047857;
+  border-color: #34d399;
+  box-shadow: 0 0 0 1px #10b981;
+}

@@ -72,11 +72,13 @@ function paintRow(rowEl, row, absIdx, prevUidMap, nodeIdx) {
   // Flash: only if this node is now showing a DIFFERENT uid than before
   const prevUid = prevUidMap.get(nodeIdx);
   if (alert && prevUid !== row.internal_uid) {
-    // Force reflow trick — same pattern as Phase 1/2
-    rowEl.classList.remove('flash');
-    void rowEl.offsetWidth;
-    rowEl.classList.add('flash');
-    rowEl.addEventListener('animationend', () => rowEl.classList.remove('flash'), { once: true });
+    rowEl.animate([
+      { backgroundColor: '#5c1a1a' },
+      { backgroundColor: '#1a0e0e' }
+    ], {
+      duration: 600,
+      easing: 'ease-out'
+    });
   }
   prevUidMap.set(nodeIdx, row.internal_uid);
   rowEl.dataset.uid = row.internal_uid;

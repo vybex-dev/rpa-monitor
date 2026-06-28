@@ -170,7 +170,7 @@ export default function App() {
       },
       {
         id: "export-csv",
-        name: "Export CSV",
+        name: "Snapshot Export",
         icon: "↓",
         action: () => exportToCsv(activeViewPool),
       },
@@ -286,6 +286,17 @@ export default function App() {
           >
             <span className="pauseBtnIcon">📈</span>
             <span className="pauseBtnText">Analytics</span>
+          </button>
+
+          {/* Snapshot Export */}
+          <button
+            className="exportGlobalBtn"
+            onClick={() => exportToCsv(activeViewPool)}
+            title="Download CSV snapshot of current view"
+            aria-label="Snapshot Export"
+          >
+            <span className="pauseBtnIcon">⬇️</span>
+            <span className="pauseBtnText">Export</span>
           </button>
         </div>
       </header>

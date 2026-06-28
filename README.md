@@ -446,6 +446,4 @@ MIT © 2026 — Built for Frontend Battle 2026 · Round 2
 
 **Made with React 19 + Vite 8 · Zero dependencies beyond the React ecosystem**
 
-_"If it scrolls smoothly at 50,000 rows, you've won."_
-
 </div>
